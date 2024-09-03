@@ -8,8 +8,8 @@ from sqlalchemy import URL
 from alembic import context
 
 from src.config import secret_settings
-from src.models.users import Base as UserModelBase
-from src.models.deceaseds import Base as DeceasedModelBase
+from src.modules.database import Base
+from src.models.users import User
 
 
 # this is the Alembic Config object, which provides
@@ -38,10 +38,8 @@ if not config.get_main_option('sqlalchemy.url'):
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = [
-                    UserModelBase.metadata,
-                    DeceasedModelBase.metadata
-                ]
+target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
