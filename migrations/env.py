@@ -10,6 +10,8 @@ from alembic import context
 from src.config import secret_settings
 from src.modules.database import Base
 from src.models.users import User
+from src.models.board import Board
+from src.models.comments import Comment
 
 
 # this is the Alembic Config object, which provides
