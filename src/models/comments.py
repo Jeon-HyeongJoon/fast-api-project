@@ -31,7 +31,7 @@ class Comment(Base) :
     parent_comment_id: Mapped[int] = mapped_column(Integer, ForeignKey('comments.comment_id', ondelete="SET NULL"), nullable=True)
     writer: Mapped[User] = relationship("User")
     board: Mapped[Board] = relationship("Board")
-    # parent_comment: Mapped['Comment'] = relationship("Comment", remote_side=[comment_id], backref="child_comments")
+    parent_comment: Mapped['Comment'] = relationship("Comment", remote_side=[comment_id], backref="child_comments")
     
     def serialize(self):
         return dict(
