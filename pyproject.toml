@@ -21,6 +21,11 @@ bcrypt = "^4.2.0"
 redis = "^5.0.7"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+testcontainers = "^4.8.1"
+pytest-asyncio = "^0.24.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
