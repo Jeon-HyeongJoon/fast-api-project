@@ -12,7 +12,9 @@ router = APIRouter(prefix="/users")
 
 
 @router.get("/me", response_model=User)
-async def read_users_me(current_user: CurrentUserDepends):
+async def read_users_me(
+    current_user: CurrentUserDepends
+):
     print(current_user)
     return current_user
 
@@ -22,9 +24,9 @@ async def read_users_me(current_user: CurrentUserDepends):
 #     current_user: CurrentUserDepends
 #     ) -> bool :
     
-@router.get("/")
-async def read_all_users(current_user: CurrentUserDepends,session: AsyncSessionDepends):
-    if current_user.role != '0':
-        raise AuthExceptions.CREDENTIALS_EXCEPTION
+# @router.get("/")
+# async def read_all_users(current_user: CurrentUserDepends,session: AsyncSessionDepends):
+#     if current_user.role != '0':
+#         raise AuthExceptions.CREDENTIALS_EXCEPTION
   
-    return await admin_get_all_users(session)
+#     return await admin_get_all_users(session)

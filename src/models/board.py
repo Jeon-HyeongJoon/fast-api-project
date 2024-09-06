@@ -22,7 +22,7 @@ class Board(Base):
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     content: Mapped[str] = mapped_column(String(1000), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
+    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     writer_id: Mapped[int] = mapped_column(Integer, ForeignKey(User.user_id), nullable=False)
     writer: Mapped[User] = relationship("User")
     
