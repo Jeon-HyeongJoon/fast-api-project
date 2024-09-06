@@ -28,17 +28,16 @@ class Token(BaseModel):
 class User(BaseModel):
     id: int
     user_name: str
-    real_name: str
+    email: str
     role : str
 
 class SignupForm(BaseModel):
-    # email: EmailStr
     user_name: str
-    real_name: str
+    email: EmailStr
     password: str
 
 class LoginForm(BaseModel):
-    user_name: str
+    email: EmailStr
     password: str
 
 

@@ -25,7 +25,7 @@ class Comment(Base) :
     comment_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     content: Mapped[str] = mapped_column(String(1000), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
+    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     writer_id: Mapped[int] = mapped_column(Integer, ForeignKey(User.user_id, ondelete="CASCADE"), nullable=False)
     board_id: Mapped[int] = mapped_column(Integer, ForeignKey(Board.board_id, ondelete="CASCADE"), nullable=False)
     parent_comment_id: Mapped[int] = mapped_column(Integer, ForeignKey('comments.comment_id', ondelete="SET NULL"), nullable=True)
