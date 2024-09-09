@@ -99,7 +99,7 @@ async def signup(session: AsyncSession, data: SignupForm):
         AuthExceptions.INVALID_FULLNAME_LENGTH,
     )
     must(
-        data.real_name and 0 < len(data.real_name) < 128,
+        data.email and 0 < len(data.email) < 128,
         AuthExceptions.INVALID_FULLNAME_LENGTH,
     )
     must(
@@ -109,7 +109,7 @@ async def signup(session: AsyncSession, data: SignupForm):
 
     user = models.User(
         user_name=data.user_name,
-        real_name=data.real_name,
+        email=data.email,
         hashed_password=hash_password(data.password),
         role='0'
     )
