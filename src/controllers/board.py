@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
+# from sqlalchemy.ext.asyncio import AsyncSession
 from src.modules.database import AsyncSessionDepends
 from src.services.board import (
     BoardCreate, 
     BoardUpdate, 
-    BoardResponse,
+    BoardSimple,
     get_board, 
     get_boards, 
     create_board, 
@@ -11,20 +12,21 @@ from src.services.board import (
     delete_board
 )
 from typing import List
+from src.services.auth import CurrentUserDepends
 
 router = APIRouter(prefix="/board")
 
 # 게시물 생성
-@router.post("/", response_model=BoardResponse)
+@router.post("/")
 async def create_new_board(
     session: AsyncSessionDepends, 
     board: BoardCreate, 
-    user_id: int=1
+    # user: CurrentUserDepends
 ):
-    return await create_board(session=session, board=board, user_id=user_id)
+    return await create_board(session=session, board=board, user_id=1)
 
 # 특정 게시물 조회
-@router.get("/{board_id}", response_model=BoardResponse)
+@router.get("/{board_id}")
 async def read_board(
     session: AsyncSessionDepends,
     board_id: int
@@ -35,7 +37,7 @@ async def read_board(
     return db_board
 
 # 전체 게시물 목록 조회
-@router.get("/", response_model=List[BoardResponse])
+@router.get("/")
 async def read_boards(
     session: AsyncSessionDepends,
     skip: int = 0, 
@@ -44,10 +46,10 @@ async def read_boards(
     return await get_boards(session, skip=skip, limit=limit)
 
 # 게시물 수정
-@router.put("/{board_id}", response_model=BoardResponse)
+@router.put("/{board_id}")
 async def update_board_item(
-    session: AsyncSessionDepends,
-    board: BoardUpdate,
+    session: AsyncSessionDepends, 
+    board: BoardUpdate, 
     board_id: int
 ):
     db_board = await update_board(session, board_id=board_id, board=board)

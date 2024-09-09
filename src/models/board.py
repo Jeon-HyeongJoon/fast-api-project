@@ -32,4 +32,6 @@ class Board(Base):
                 title=self.title,
                 writer=self.writer_id,
                 content=self.content,
+                created_at=self.created_at,
+                modified_at=self.modified_at
                 )

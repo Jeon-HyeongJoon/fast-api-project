@@ -38,4 +38,6 @@ class Comment(Base) :
                 id=self.comment_id,
                 writer=self.writer_id,
                 content=self.content,
+                created_at=self.created_at,
+                modified_at=self.modified_at
                 )

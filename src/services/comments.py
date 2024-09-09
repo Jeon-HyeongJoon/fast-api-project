@@ -1,28 +1,46 @@
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from src.modules.database import AsyncSessionDepends
 from src.models.board import Board
 from src.models.comments import Comment
-from src.services.comments import CommentCreate, CommentUpdate, CommentResponse
 
 from src.modules.utils import must
-from datetime import datetime
 
-router = APIRouter()
+
+
+class CommentCreate(BaseModel):
+    content: str
+    writer_id: int
+    parent_comment_id: Optional[int] = None
+
+class CommentUpdate(BaseModel):
+    content: str
+
+class CommentResponse(BaseModel):
+    id: int
+    writer: int
+    content: str
+    created_at: datetime
+    modified_at: Optional[datetime] = None
+
 
 # 댓글 생성
-@router.post("/board/{board_id}/comments", response_model=CommentResponse)
 async def create_comment(
-    session: AsyncSessionDepends,
+    session: AsyncSession,
     board_id: int, 
     comment_data: CommentCreate
 ):
     # 게시물이 존재하는지 확인
     board = await session.get(Board, board_id)
-    if not board:
-        raise HTTPException(status_code=404, detail="Board not found")
+    must(board, HTTPException(status_code=404, detail="Board not found"))
     
     # 댓글 생성
     new_comment = Comment(
@@ -30,7 +48,7 @@ async def create_comment(
         writer_id=comment_data.writer_id,
         board_id=board_id,
         parent_comment_id=comment_data.parent_comment_id,
-        created_at=datetime.utcnow()
+        # created_at=func.current_timestamp()
     )
     
     session.add(new_comment)
