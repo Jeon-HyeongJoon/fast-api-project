@@ -7,6 +7,7 @@ from src.models.users import User
 from datetime import datetime
 from typing import Optional
 
+
 class BoardCreate(BaseModel):
     title: str
     content: str
@@ -69,8 +70,9 @@ async def update_board(session: AsyncSession, board_id: int, board: BoardUpdate)
     return db_board
 
 async def delete_board(session: AsyncSession, board_id: int):
-    db_board = await get_board(session, board_id)
+    db_board = await session.get(Board, board_id)
     if db_board:
         await session.delete(db_board)
         await session.commit()
-    return db_board
+        return True
+    return False
