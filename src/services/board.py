@@ -29,11 +29,8 @@ class BoardDetail(BaseModel):
     created_at: datetime
 
         
-        
 async def get_board(session: AsyncSession, board_id: int):
-    # result = await session.execute(select(Board).filter(Board.board_id == board_id))
-    # return result.scalars().first()
-    result = await session.execute(select(Board).options(selectinload(Board.writer)))
+    result = await session.execute(select(Board).options(selectinload(Board.writer)).filter(Board.board_id == board_id))
     board = result.scalars().first()
     return BoardDetail(
                 id=board.board_id, 
@@ -43,7 +40,7 @@ async def get_board(session: AsyncSession, board_id: int):
                 created_at=board.created_at
             )
 
-async def get_boards(session: AsyncSession, skip: int = 0, limit: int = 10):
+async def get_boards(session: AsyncSession, skip: int, limit: int):
     result = await session.execute(select(Board).options(selectinload(Board.writer)).offset(skip).limit(limit))
     boards = result.scalars().all()
     return [BoardSimple(id=board.board_id, title=board.title, writer=board.writer.user_name) for board in boards]
@@ -76,3 +73,17 @@ async def delete_board(session: AsyncSession, board_id: int):
         await session.commit()
         return True
     return False
+
+async def search_boards(session: AsyncSession, title: str, skip: int, limit: int):
+    # 제목에 title이 포함된 게시물을 검색
+    result = await session.execute(
+        select(Board)
+        .options(selectinload(Board.writer))
+        .filter(Board.title.ilike(f"%{title}%"))  # 대소문자 구분 없이 제목 검색
+        .offset(skip)
+        .limit(limit)
+    )
+    
+    boards = result.scalars().all()
+    
+    return [BoardSimple(id=board.board_id, title=board.title, writer=board.writer.user_name) for board in boards]

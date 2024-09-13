@@ -4,12 +4,12 @@ from src.modules.database import AsyncSessionDepends
 from src.services.board import (
     BoardCreate, 
     BoardUpdate, 
-    BoardSimple,
     get_board, 
     get_boards, 
     create_board, 
     update_board, 
-    delete_board
+    delete_board,
+    search_boards
 )
 from typing import List
 from src.services.auth import CurrentUserDepends
@@ -31,19 +31,26 @@ async def _router_read_board(
     session: AsyncSessionDepends,
     board_id: int
 ):
-    db_board = await get_board(session, board_id=board_id)
-    if db_board is None:
-        raise HTTPException(status_code=404, detail="Board not found")
-    return db_board
+   return await get_board(session, board_id=board_id)
 
 # 전체 게시물 목록 조회
+# @router.get("/")
+# async def _router_read_boards(
+#     session: AsyncSessionDepends,
+#     skip: int = 0, 
+#     limit: int = 10
+# ):
+#     return await get_boards(session, skip=skip, limit=limit)
+
+# 게시물 검색 및 전체 게시물 목록 조회
 @router.get("/")
-async def _router_read_boards(
+async def _router_search_boards(
     session: AsyncSessionDepends,
-    skip: int = 0, 
+    search: str = "",
+    skip: int = 0,
     limit: int = 10
 ):
-    return await get_boards(session, skip=skip, limit=limit)
+    return await search_boards(session, search=search, skip=skip, limit=limit)
 
 # 게시물 수정
 @router.put("/{board_id}")
@@ -52,10 +59,7 @@ async def _router_update_board_item(
     board: BoardUpdate, 
     board_id: int
 ):
-    db_board = await update_board(session, board_id=board_id, board=board)
-    if db_board is None:
-        raise HTTPException(status_code=404, detail="Board not found")
-    return db_board
+    return await update_board(session, board_id=board_id, board=board)
 
 # 게시물 삭제
 @router.delete("/{board_id}")
@@ -63,7 +67,6 @@ async def _router_delete_board_item(
     session: AsyncSessionDepends,
     board_id: int
 ):
-    db_board = await delete_board(session, board_id=board_id)
-    if db_board is None:
-        raise HTTPException(status_code=404, detail="Board not found")
+    await delete_board(session, board_id=board_id)
     return {"message": "Board deleted successfully"}
+

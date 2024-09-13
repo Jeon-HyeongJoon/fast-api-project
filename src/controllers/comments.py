@@ -27,21 +27,17 @@ async def _router_create_comment(
     board_id: int, 
     comment_data: CommentCreate
 ):
-    
-    result = await create_comment(session, board_id, comment_data)
-    must(result, HTTPException(status_code=404, detail="comment not found"))
-    return result.serialize()
+    return await create_comment(session, board_id, comment_data).serialize()
 
 # 댓글 조회 (해당 게시물의 모든 댓글)
 @router.get("/board/{board_id}/comments", response_model=List[CommentResponse])
 async def _router_get_comments(
     session: AsyncSessionDepends,
-    board_id: int
+    board_id: int,
+    skip: int = 0, 
+    limit: int = 10
 ):
-
-    result = await get_comments(session, board_id)
-    must(result, HTTPException(status_code=404, detail="comment not found"))
-    return result
+    return await get_comments(session, board_id, skip, limit)
 
 # 댓글 수정
 @router.put("/board/{board_id}/comments/{comment_id}", response_model=CommentResponse)
@@ -51,9 +47,7 @@ async def _router_update_comment(
     comment_id: int, 
     comment_data: CommentUpdate
 ):
-    result = await update_comment(session, comment_id, comment_data)
-    must(result, HTTPException(status_code=404, detail="comment not found"))
-    return result.serialize()
+    return await update_comment(session, comment_id, comment_data)
 
 # 댓글 삭제
 @router.delete("/board/{board_id}/comments/{comment_id}", response_model=dict)
@@ -63,8 +57,5 @@ async def _router_delete_comment(
     comment_id: int
 ):
     # 댓글이 존재하는지 확인
-    delete_success = await delete_comment(session, board_id, comment_id)
-    if delete_success:
-        return {"detail": "Comment deleted successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="fail")
+    await delete_comment(session, board_id, comment_id)
+    return {"detail": "Comment deleted successfully"}
