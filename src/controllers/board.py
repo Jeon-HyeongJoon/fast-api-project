@@ -18,7 +18,7 @@ router = APIRouter(prefix="/board")
 
 # 게시물 생성
 @router.post("/")
-async def create_new_board(
+async def _router_create_new_board(
     session: AsyncSessionDepends, 
     board: BoardCreate, 
     # user: CurrentUserDepends
@@ -27,7 +27,7 @@ async def create_new_board(
 
 # 특정 게시물 조회
 @router.get("/{board_id}")
-async def read_board(
+async def _router_read_board(
     session: AsyncSessionDepends,
     board_id: int
 ):
@@ -38,7 +38,7 @@ async def read_board(
 
 # 전체 게시물 목록 조회
 @router.get("/")
-async def read_boards(
+async def _router_read_boards(
     session: AsyncSessionDepends,
     skip: int = 0, 
     limit: int = 10
@@ -47,7 +47,7 @@ async def read_boards(
 
 # 게시물 수정
 @router.put("/{board_id}")
-async def update_board_item(
+async def _router_update_board_item(
     session: AsyncSessionDepends, 
     board: BoardUpdate, 
     board_id: int
@@ -59,7 +59,7 @@ async def update_board_item(
 
 # 게시물 삭제
 @router.delete("/{board_id}")
-async def delete_board_item(
+async def _router_delete_board_item(
     session: AsyncSessionDepends,
     board_id: int
 ):

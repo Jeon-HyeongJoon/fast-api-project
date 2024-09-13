@@ -27,13 +27,13 @@ class Token(BaseModel):
 
 class User(BaseModel):
     id: int
-    user_name: str
     email: str
+    user_name: str
     role : str
 
 class SignupForm(BaseModel):
-    user_name: str
     email: EmailStr
+    user_name: str
     password: str
 
 class LoginForm(BaseModel):
@@ -65,24 +65,16 @@ def verify_password(origin: str, hashed: str) -> bool:
 # async def get_user_by_email(session: AsyncSession, email: str) -> models.User | None:
 #     return await session.scalar(select(models.User).where(models.User.email == email))
 
-
-# async def is_usable_email_or_raise(session: AsyncSession, email: str):
-#     is_exist = bool(
-#         await session.scalar(
-#             select(func.count(models.User.user_id)).where(models.User.email == email)
-#         )
-#     )
-#     must(not is_exist, AuthExceptions.EMAIL_EXISTS)
     
-async def get_user_by_id(session: AsyncSession, id: int) -> models.User | None:
-    return await session.scalar(select(models.User).where(models.User.user_id == id))
+async def get_user_by_email(session: AsyncSession, email: str) -> models.User | None:
+    return await session.scalar(select(models.User).where(models.User.email == email))
 
 
 async def get_user_by_name(session: AsyncSession, user_name: str) -> models.User | None:
     return await session.scalar(select(models.User).where(models.User.user_name == user_name))
 
 
-async def is_usable_id_or_raise(session: AsyncSession, user_name: str):
+async def is_usable_name_or_raise(session: AsyncSession, user_name: str):
     is_exist = bool(
         await session.scalar(
             select(func.count(models.User.user_id)).where(models.User.user_name == user_name)
@@ -91,9 +83,18 @@ async def is_usable_id_or_raise(session: AsyncSession, user_name: str):
     must(not is_exist, AuthExceptions.USER_NAME_EXISTS)
 
 
+async def is_usable_email_or_raise(session: AsyncSession, email: str):
+    is_exist = bool(
+        await session.scalar(
+            select(func.count(models.User.user_id)).where(models.User.email == email)
+        )
+    )
+    must(not is_exist, AuthExceptions.EMAIL_EXISTS)
+
+
 async def signup(session: AsyncSession, data: SignupForm):
-    await is_usable_id_or_raise(session, data.user_name)
-    # await is_usable_email_or_raise(session, data.email)
+    await is_usable_email_or_raise(session, data.email)
+    await is_usable_name_or_raise(session, data.user_name)
     must(
         data.user_name and 0 < len(data.user_name) < 128,
         AuthExceptions.INVALID_FULLNAME_LENGTH,
@@ -119,7 +120,7 @@ async def signup(session: AsyncSession, data: SignupForm):
 
 
 async def authenticate_user(session: AsyncSession, data: LoginForm):
-    user = await get_user_by_name(session, data.user_name)
+    user = await get_user_by_email(session, data.email)
     if not user:
         return False
     if not verify_password(data.password, user.hashed_password):
