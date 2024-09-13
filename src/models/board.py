@@ -23,14 +23,14 @@ class Board(Base):
     content: Mapped[str] = mapped_column(String(1000), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    writer_id: Mapped[int] = mapped_column(Integer, ForeignKey(User.user_id), nullable=False)
+    writer_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"), nullable=False)
     writer: Mapped[User] = relationship("User")
     
     def serialize(self):
         return dict(
                 id=self.board_id,
                 title=self.title,
-                writer=self.writer_id,
+                writer=self.writer,
                 content=self.content,
                 created_at=self.created_at,
                 modified_at=self.modified_at

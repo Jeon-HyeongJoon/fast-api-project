@@ -26,11 +26,11 @@ class Comment(Base) :
     content: Mapped[str] = mapped_column(String(1000), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    writer_id: Mapped[int] = mapped_column(Integer, ForeignKey(User.user_id, ondelete="CASCADE"), nullable=False)
-    board_id: Mapped[int] = mapped_column(Integer, ForeignKey(Board.board_id, ondelete="CASCADE"), nullable=False)
-    parent_comment_id: Mapped[int] = mapped_column(Integer, ForeignKey('comments.comment_id', ondelete="SET NULL"), nullable=True)
+    writer_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
     writer: Mapped[User] = relationship("User")
+    board_id: Mapped[int] = mapped_column(Integer, ForeignKey("board.board_id", ondelete="CASCADE"), nullable=False)
     board: Mapped[Board] = relationship("Board")
+    parent_comment_id: Mapped[int] = mapped_column(Integer, ForeignKey('comments.comment_id', ondelete="SET NULL"), nullable=True)
     parent_comment: Mapped['Comment'] = relationship("Comment", remote_side=[comment_id], backref="child_comments")
     
     def serialize(self):
