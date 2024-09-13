@@ -58,10 +58,10 @@ async def create_comment(
     await session.commit()
     await session.refresh(new_comment)
     
-    return new_comment
+    return new_comment.serialize()
 
-async def get_child_comments(session: AsyncSession, parent_comment_id: int) -> List[CommentResponse]:
-    result = await session.execute(select(Comment).filter(Comment.parent_comment_id == parent_comment_id))
+async def get_child_comments(session: AsyncSession, comment_id: int) -> List[CommentResponse]:
+    result = await session.execute(select(Comment).filter(Comment.parent_comment_id == comment_id))
     child_comments = result.scalars().all()
 
     return [CommentResponse(**comment.serialize())for comment in child_comments]
@@ -69,19 +69,20 @@ async def get_child_comments(session: AsyncSession, parent_comment_id: int) -> L
 # 댓글 조회 (해당 게시물의 모든 댓글)
 async def get_comments(
     session: AsyncSession,
-    board_id: int
+    board_id: int,
+    skip: int, 
+    limit: int
 ):
     # 게시물이 존재하는지 확인
     board = await session.get(Board, board_id)
     must(board, HTTPException(status_code=404, detail="Board not found"))
     
     # 댓글 조회
-        # 부모 댓글 조회 (parent_comment_id가 None인 댓글이 부모 댓글)
     result = await session.execute(select(Comment).filter(
         Comment.board_id == board_id,
         Comment.parent_comment_id == None
-    ))
-    parent_comments = result.scalars().all()
+    )).offset(skip).limit(limit)
+    comments = result.scalars().all()
     
     # 부모 댓글에 대한 자식 댓글까지 포함하여 재귀적으로 반환
     return [
@@ -93,7 +94,7 @@ async def get_comments(
             modified_at=comment.modified_at,
             child_comments=await get_child_comments(session, comment.comment_id)
         )
-        for comment in parent_comments
+        for comment in comments
     ]
 
 # 댓글 수정
@@ -114,7 +115,7 @@ async def update_comment(
     await session.commit()
     await session.refresh(comment)
     
-    return comment
+    return comment.serialize()
 
 # 댓글 삭제
 async def delete_comment(
