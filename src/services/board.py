@@ -47,7 +47,7 @@ async def get_board(session: AsyncSession, board_id: int):
 async def get_boards(session: AsyncSession, skip: int, limit: int):
     result = await session.execute(select(Board).options(selectinload(Board.writer)).offset(skip).limit(limit))
     boards = result.scalars().all()
-    return [BoardSimple(id=board.board_id, title=board.title, writer=board.writer.user_name) for board in boards]
+    return [BoardSimple(board_id=board.board_id, title=board.title, writer=board.writer.user_name) for board in boards]
 
 async def create_board(session: AsyncSession, board: BoardCreate, user_id: int=1):
     new_board = Board(

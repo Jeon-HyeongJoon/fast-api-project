@@ -24,7 +24,7 @@ class CommentUpdate(BaseModel):
     content: str
 
 class CommentResponse(BaseModel):
-    id: int
+    comment_id: int
     writer: int
     content: str
     created_at: datetime
@@ -35,9 +35,9 @@ class CommentResponse(BaseModel):
 # 댓글 생성
 async def create_comment(
     session: AsyncSession,
+    user_id: int,
     board_id: int, 
-    comment_data: CommentCreate,
-    user_id: int=1
+    comment_data: CommentCreate
 ):
     # 게시물이 존재하는지 확인
     board = await session.get(Board, board_id)
@@ -89,7 +89,7 @@ async def get_comments(
     # 부모 댓글에 대한 자식 댓글까지 포함하여 재귀적으로 반환
     return [
         CommentResponse(
-            id=comment.comment_id,
+            comment_id=comment.comment_id,
             writer=comment.writer_id,
             content=comment.content,
             created_at=comment.created_at,
