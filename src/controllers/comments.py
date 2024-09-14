@@ -14,7 +14,7 @@ from src.services.comments import (
     update_comment,
     delete_comment
 )
-
+from src.services.auth import CurrentUserDepends
 from src.modules.utils import must
 from datetime import datetime
 
@@ -24,10 +24,11 @@ router = APIRouter()
 @router.post("/board/{board_id}/comments", response_model=CommentResponse)
 async def _router_create_comment(
     session: AsyncSessionDepends,
+    user: CurrentUserDepends,
     board_id: int, 
     comment_data: CommentCreate
 ):
-    return await create_comment(session, board_id, comment_data).serialize()
+    return await create_comment(session, user.user_id, board_id, comment_data)
 
 # 댓글 조회 (해당 게시물의 모든 댓글)
 @router.get("/board/{board_id}/comments", response_model=List[CommentResponse])
@@ -43,6 +44,7 @@ async def _router_get_comments(
 @router.put("/board/{board_id}/comments/{comment_id}", response_model=CommentResponse)
 async def _router_update_comment(
     session: AsyncSessionDepends,
+    user: CurrentUserDepends,
     board_id: int, 
     comment_id: int, 
     comment_data: CommentUpdate
@@ -53,6 +55,7 @@ async def _router_update_comment(
 @router.delete("/board/{board_id}/comments/{comment_id}", response_model=dict)
 async def _router_delete_comment(
     session: AsyncSessionDepends,
+    user: CurrentUserDepends,
     board_id: int, 
     comment_id: int
 ):

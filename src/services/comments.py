@@ -35,9 +35,9 @@ class CommentResponse(BaseModel):
 # 댓글 생성
 async def create_comment(
     session: AsyncSession,
+    user_id: int,
     board_id: int, 
-    comment_data: CommentCreate,
-    user_id: int=1
+    comment_data: CommentCreate
 ):
     # 게시물이 존재하는지 확인
     board = await session.get(Board, board_id)

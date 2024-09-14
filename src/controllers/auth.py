@@ -60,7 +60,8 @@ async def _router_login(
 @router.post("/logout")
 async def _router_logout(
     cache: CacheDepends, 
-    response: Response, session_id: str = Cookie(None)
+    response: Response, 
+    session_id: str = Cookie(None)
 ):
     must(session_id, AuthExceptions.SESSION_NOT_FOUND)
     if await cache.exists(session_id):

@@ -21,15 +21,16 @@ router = APIRouter(prefix="/board")
 async def _router_create_new_board(
     session: AsyncSessionDepends, 
     board: BoardCreate, 
-    # user: CurrentUserDepends
+    user: CurrentUserDepends
 ):
-    return await create_board(session=session, board=board, user_id=1)
+    return await create_board(session=session, board=board, user_id=user.user_id)
 
 # 특정 게시물 조회
 @router.get("/{board_id}")
 async def _router_read_board(
     session: AsyncSessionDepends,
-    board_id: int
+    board_id: int,
+    user: CurrentUserDepends
 ):
    return await get_board(session, board_id=board_id)
 
@@ -37,6 +38,7 @@ async def _router_read_board(
 # @router.get("/")
 # async def _router_read_boards(
 #     session: AsyncSessionDepends,
+#     user: CurrentUserDepends,
 #     skip: int = 0, 
 #     limit: int = 10
 # ):
@@ -46,6 +48,7 @@ async def _router_read_board(
 @router.get("/")
 async def _router_search_boards(
     session: AsyncSessionDepends,
+    user: CurrentUserDepends,
     search: str = "",
     skip: int = 0,
     limit: int = 10
@@ -55,7 +58,8 @@ async def _router_search_boards(
 # 게시물 수정
 @router.put("/{board_id}")
 async def _router_update_board_item(
-    session: AsyncSessionDepends, 
+    session: AsyncSessionDepends,
+    user: CurrentUserDepends, 
     board: BoardUpdate, 
     board_id: int
 ):
@@ -65,6 +69,7 @@ async def _router_update_board_item(
 @router.delete("/{board_id}")
 async def _router_delete_board_item(
     session: AsyncSessionDepends,
+    user: CurrentUserDepends,
     board_id: int
 ):
     await delete_board(session, board_id=board_id)
