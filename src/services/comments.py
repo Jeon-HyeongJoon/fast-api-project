@@ -78,10 +78,12 @@ async def get_comments(
     must(board, HTTPException(status_code=404, detail="Board not found"))
     
     # 댓글 조회
-    result = await session.execute(select(Comment).filter(
-        Comment.board_id == board_id,
-        Comment.parent_comment_id == None
-    )).offset(skip).limit(limit)
+    result = await session.execute(
+        select(Comment)
+        .filter(Comment.board_id == board_id, Comment.parent_comment_id == None)
+        .offset(skip)
+        .limit(limit)
+    )
     comments = result.scalars().all()
     
     # 부모 댓글에 대한 자식 댓글까지 포함하여 재귀적으로 반환

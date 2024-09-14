@@ -27,7 +27,7 @@ async def _router_create_comment(
     board_id: int, 
     comment_data: CommentCreate
 ):
-    return await create_comment(session, board_id, comment_data).serialize()
+    return await create_comment(session, board_id, comment_data)
 
 # 댓글 조회 (해당 게시물의 모든 댓글)
 @router.get("/board/{board_id}/comments", response_model=List[CommentResponse])

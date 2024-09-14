@@ -4,8 +4,9 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.board import Board
 from src.models.users import User
+from src.services.comments import (CommentResponse, get_comments)
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 
 class BoardCreate(BaseModel):
@@ -17,27 +18,30 @@ class BoardUpdate(BaseModel):
     content: str
 
 class BoardSimple(BaseModel):
-    id: int
+    board_id: int
     title: str
     writer: str
 
 class BoardDetail(BaseModel):
-    id: int
+    board_id: int
     title: str
     writer: str
     content: str
     created_at: datetime
+    comments: List[CommentResponse]
 
         
 async def get_board(session: AsyncSession, board_id: int):
     result = await session.execute(select(Board).options(selectinload(Board.writer)).filter(Board.board_id == board_id))
     board = result.scalars().first()
+    comments = await get_comments(session=session, board_id=board_id, skip=0, limit=10)
     return BoardDetail(
-                id=board.board_id, 
+                board_id=board.board_id, 
                 title=board.title, 
                 writer=board.writer.user_name, 
                 content=board.content, 
-                created_at=board.created_at
+                created_at=board.created_at,
+                comments=comments
             )
 
 async def get_boards(session: AsyncSession, skip: int, limit: int):
@@ -74,12 +78,12 @@ async def delete_board(session: AsyncSession, board_id: int):
         return True
     return False
 
-async def search_boards(session: AsyncSession, title: str, skip: int, limit: int):
+async def search_boards(session: AsyncSession, search: str, skip: int, limit: int):
     # 제목에 title이 포함된 게시물을 검색
     result = await session.execute(
         select(Board)
         .options(selectinload(Board.writer))
-        .filter(Board.title.ilike(f"%{title}%"))  # 대소문자 구분 없이 제목 검색
+        .filter(Board.title.ilike(f"%{search}%"))  # 대소문자 구분 없이 제목 검색
         .offset(skip)
         .limit(limit)
     )
