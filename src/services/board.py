@@ -90,4 +90,4 @@ async def search_boards(session: AsyncSession, search: str, skip: int, limit: in
     
     boards = result.scalars().all()
     
-    return [BoardSimple(id=board.board_id, title=board.title, writer=board.writer.user_name) for board in boards]
+    return [BoardSimple(board_id=board.board_id, title=board.title, writer=board.writer.user_name) for board in boards]

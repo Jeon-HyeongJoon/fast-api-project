@@ -28,7 +28,7 @@ class Board(Base):
     
     def serialize(self):
         return dict(
-                id=self.board_id,
+                board_id=self.board_id,
                 title=self.title,
                 writer=self.writer,
                 content=self.content,
