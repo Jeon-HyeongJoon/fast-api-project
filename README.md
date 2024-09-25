@@ -1,7 +1,7 @@
 <h2>게시판 API</h2>
 
 * ERD
-  ![image](https://github.com/user-attachments/assets/261bff2d-f0a1-4773-b12f-20bfd864083c)
+![image](https://github.com/user-attachments/assets/261bff2d-f0a1-4773-b12f-20bfd864083c)
 
 
 * Project Structure
