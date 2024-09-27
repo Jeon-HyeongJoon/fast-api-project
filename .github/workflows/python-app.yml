@@ -32,4 +32,8 @@ jobs:
     - name: run test
       run: |
         poetry run pytest
-      
+
+    - name: Trigger Jenkins deployment
+      if: success()
+      run: |
+        curl -X POST http://my-jenkins-server-url/github-webhook/
