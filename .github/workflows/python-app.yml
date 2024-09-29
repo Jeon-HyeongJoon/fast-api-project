@@ -33,7 +33,8 @@ jobs:
       run: |
         poetry run pytest
 
-    # - name: Trigger Jenkins deployment
-    #   if: success()
-    #   run: |
-    #     curl -X POST http://my-cicd-server-url/github-webhook/
+    - name: Trigger Jenkins deployment
+      if: success()
+      run: |
+        curl -X POST http://my-cicd-server-url/github-webhook/
+      continue-on-error: true
