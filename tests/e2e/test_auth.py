@@ -88,13 +88,13 @@ async def client(containers):
 @pytest.mark.asyncio
 async def test_signup_and_login_logout(client: httpx.AsyncClient):
     # 1. 회원가입 테스트
-    username = "testuser"
-    realname = "Test User"
+    email = "testuser@naver.com"
+    user_name = "Test User"
     password = "testpass123"
 
     signup_data = {
-        "user_name": username,
-        "real_name": realname,
+        "email": email,
+        "user_name": user_name,
         "password": password
     }
     response = await client.post("/auth/signup", json=signup_data)
@@ -102,12 +102,12 @@ async def test_signup_and_login_logout(client: httpx.AsyncClient):
     assert response.status_code == 200
     signup_result = response.json()
     print(signup_result)
-    assert signup_result["user_name"] == username
-    assert signup_result["real_name"] == realname
+    assert signup_result["email"] == email
+    assert signup_result["user_name"] == user_name
     assert signup_result["role"] == '0'
 
     # 2. 로그인 테스트
-    login_data = {"user_name": username, "password": password}
+    login_data = {"email": email, "password": password}
     response = await client.post("/auth/login", json=login_data)
     assert response.status_code == 200
     login_result = response.json()
